@@ -37,10 +37,18 @@ type PaginationConfig struct {
 	DefaultLast  int
 }
 
+func (pc PaginationConfig) isForward() bool {
+	return pc.Type == Both || pc.Type == Forward
+}
+
+func (pc PaginationConfig) isBackword() bool {
+	return pc.Type == Both || pc.Type == Forward
+}
+
 // FieldConfigArgument creates FieldConfigArgument for pagination.
 func (pc PaginationConfig) FieldConfigArgument() graphql.FieldConfigArgument {
 	args := graphql.FieldConfigArgument{}
-	if pc.Type == Both || pc.Type == Forward {
+	if pc.isForward() {
 		first := &graphql.ArgumentConfig{
 			Type:        graphql.Int,
 			Description: "number of edges to get",
@@ -54,7 +62,7 @@ func (pc PaginationConfig) FieldConfigArgument() graphql.FieldConfigArgument {
 			Description: "cursor for edge. after the edge to get (exclusively)",
 		}
 	}
-	if pc.Type == Both || pc.Type == Backword {
+	if pc.isBackword() {
 		last := &graphql.ArgumentConfig{
 			Type:        graphql.Int,
 			Description: "number of edges to get",
@@ -74,79 +82,87 @@ func (pc PaginationConfig) FieldConfigArgument() graphql.FieldConfigArgument {
 // Parse parses args as PaginationParams.
 func (pc PaginationConfig) Parse(args map[string]interface{}) (*PaginationParams, error) {
 
-	if v, ok := args["first"]; ok {
-		size, ok := v.(int)
-		if !ok || size < 0 {
-			return nil, fmt.Errorf("invalid value for \"first\": %v", v)
-		}
-		var pivot string
-		if w, ok := args["after"]; ok {
-			pivot, ok = w.(string)
-			if !ok {
-				return nil, fmt.Errorf("unexpected \"after\" type: want=string got=%T", w)
+	if pc.isForward() {
+		if v, ok := args["first"]; ok {
+			size, ok := v.(int)
+			if !ok || size < 0 {
+				return nil, fmt.Errorf("invalid value for \"first\": %v", v)
 			}
-		}
-		return &PaginationParams{
-			Backword: false,
-			Pivot:    pivot,
-			Size:     size,
-		}, nil
-	}
-
-	if v, ok := args["last"]; ok {
-		size, ok := v.(int)
-		if !ok || size < 0 {
-			return nil, fmt.Errorf("invalid value for \"last\": %v", v)
-		}
-		var pivot string
-		if w, ok := args["before"]; ok {
-			pivot, ok = w.(string)
-			if !ok {
-				return nil, fmt.Errorf("unexpected \"before\" type: want=string got=%T", w)
+			var pivot string
+			if w, ok := args["after"]; ok {
+				pivot, ok = w.(string)
+				if !ok {
+					return nil, fmt.Errorf("unexpected \"after\" type: want=string got=%T", w)
+				}
 			}
+			return &PaginationParams{
+				Backword: false,
+				Pivot:    pivot,
+				Size:     size,
+			}, nil
 		}
-		return &PaginationParams{
-			Backword: true,
-			Pivot:    pivot,
-			Size:     size,
-		}, nil
 	}
 
-	if v, ok := args["after"]; ok {
-		pivot, ok := v.(string)
-		if !ok {
-			return nil, fmt.Errorf("unexpected \"after\" type: want=string got=%T", v)
+	if pc.isBackword() {
+		if v, ok := args["last"]; ok {
+			size, ok := v.(int)
+			if !ok || size < 0 {
+				return nil, fmt.Errorf("invalid value for \"last\": %v", v)
+			}
+			var pivot string
+			if w, ok := args["before"]; ok {
+				pivot, ok = w.(string)
+				if !ok {
+					return nil, fmt.Errorf("unexpected \"before\" type: want=string got=%T", w)
+				}
+			}
+			return &PaginationParams{
+				Backword: true,
+				Pivot:    pivot,
+				Size:     size,
+			}, nil
 		}
-		if pc.DefaultFirst < 0 {
-			return nil, fmt.Errorf("negative default size: %d", pc.DefaultFirst)
-		}
-		return &PaginationParams{
-			Backword: false,
-			Pivot:    pivot,
-			Size:     pc.DefaultFirst,
-		}, nil
 	}
 
-	if v, ok := args["before"]; ok {
-		pivot, ok := v.(string)
-		if !ok {
-			return nil, fmt.Errorf("unexpected \"before\" type: want=string got=%T", v)
+	if pc.isForward() {
+		if v, ok := args["after"]; ok {
+			pivot, ok := v.(string)
+			if !ok {
+				return nil, fmt.Errorf("unexpected \"after\" type: want=string got=%T", v)
+			}
+			if pc.DefaultFirst < 0 {
+				return nil, fmt.Errorf("negative default size: %d", pc.DefaultFirst)
+			}
+			return &PaginationParams{
+				Backword: false,
+				Pivot:    pivot,
+				Size:     pc.DefaultFirst,
+			}, nil
 		}
-		if pc.DefaultLast < 0 {
-			return nil, fmt.Errorf("negative default size: %d", pc.DefaultLast)
+	}
+
+	if pc.isBackword() {
+		if v, ok := args["before"]; ok {
+			pivot, ok := v.(string)
+			if !ok {
+				return nil, fmt.Errorf("unexpected \"before\" type: want=string got=%T", v)
+			}
+			if pc.DefaultLast < 0 {
+				return nil, fmt.Errorf("negative default size: %d", pc.DefaultLast)
+			}
+			return &PaginationParams{
+				Backword: true,
+				Pivot:    pivot,
+				Size:     pc.DefaultLast,
+			}, nil
 		}
-		return &PaginationParams{
-			Backword: true,
-			Pivot:    pivot,
-			Size:     pc.DefaultLast,
-		}, nil
 	}
 
 	if pc.DefaultFirst < 0 {
 		return nil, fmt.Errorf("negative default size: %d", pc.DefaultFirst)
 	}
 	return &PaginationParams{
-		Backword: false,
+		Backword: pc.isBackword(),
 		Pivot:    "",
 		Size:     pc.DefaultFirst,
 	}, nil
