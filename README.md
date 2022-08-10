@@ -2,7 +2,6 @@
 
 [![GoDoc](https://godoc.org/github.com/koron-go/graphqlutils?status.svg)](https://godoc.org/github.com/koron-go/graphqlutils)
 [![Actions/Go](https://github.com/koron-go/graphqlutils/workflows/Go/badge.svg)](https://github.com/koron-go/graphqlutils/actions?query=workflow%3AGo)
-[![CircleCI](https://img.shields.io/circleci/project/github/koron-go/graphqlutils/master.svg)](https://circleci.com/gh/koron-go/graphqlutils/tree/master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/koron-go/graphqlutils)](https://goreportcard.com/report/github.com/koron-go/graphqlutils)
 
 This package provides utilities for GraphQL library [graphql-go/graphql][gql].

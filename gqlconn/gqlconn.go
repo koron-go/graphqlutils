@@ -11,10 +11,10 @@ import (
 
 // PageInfo provides a struct for page information.
 type PageInfo struct {
-	HasNextPage bool   `json"hasNextPage"`
-	HasPrevPage bool   `json"hasPrevPage"`
-	StartCursor string `json"startCursor"`
-	EndCursor   string `json"endCursor"`
+	HasNextPage bool   `json:"hasNextPage"`
+	HasPrevPage bool   `json:"hasPrevPage"`
+	StartCursor string `json:"startCursor"`
+	EndCursor   string `json:"endCursor"`
 }
 
 // PageInfoType provides named type for page information.

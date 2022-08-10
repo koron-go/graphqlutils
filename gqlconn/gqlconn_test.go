@@ -4,7 +4,7 @@ import "testing"
 
 func TestGenerateNames(t *testing.T) {
 	for i, c := range []struct {
-		baseName  string
+		baseName string
 		expType  string
 		expSmall string
 	}{
