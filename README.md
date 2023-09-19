@@ -1,6 +1,6 @@
 # koron-go/graphqlutils
 
-[![GoDoc](https://godoc.org/github.com/koron-go/graphqlutils?status.svg)](https://godoc.org/github.com/koron-go/graphqlutils)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/koron-go/graphqlutils)](https://pkg.go.dev/github.com/koron-go/graphqlutils)
 [![Actions/Go](https://github.com/koron-go/graphqlutils/workflows/Go/badge.svg)](https://github.com/koron-go/graphqlutils/actions?query=workflow%3AGo)
 [![Go Report Card](https://goreportcard.com/badge/github.com/koron-go/graphqlutils)](https://goreportcard.com/report/github.com/koron-go/graphqlutils)
 
